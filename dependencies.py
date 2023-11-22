@@ -115,9 +115,24 @@ async def get_refresh_token(_token: Token, service: AuthService, authorization: 
         raise HTTPException(status_code=401, detail='Unauthorized')
 
 
-RefreshableUser = Annotated[models.User, Depends(get_refresh_token)]
-
 LoggedInUser = Annotated[models.User, Depends(get_logged_in_user)]
 
-AuthRes = Annotated[AuthResponseHandlerBase, Depends(init_auth_res)]
 
+def require_admin(account: LoggedInUser):
+    if account.role.name == 'admin':
+        return account
+    raise HTTPException(status_code=403, detail='forbidden')
+
+
+def require_staff(account: LoggedInUser):
+    if account.role.name == 'admin' or account.role.name == 'teacher':
+        return account
+    raise HTTPException(status_code=403, detail='forbidden')
+
+
+RefreshableUser = Annotated[models.User, Depends(get_refresh_token)]
+
+Admin = Annotated[models.User, Depends(require_admin)]
+Staff = Annotated[models.User, Depends(require_staff)]
+
+AuthRes = Annotated[AuthResponseHandlerBase, Depends(init_auth_res)]
