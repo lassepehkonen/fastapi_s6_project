@@ -37,7 +37,7 @@ async def refresh(service: AuthService, _token: tokens.token.Token, account: Ref
     res.set_cookie("access_token_cookie", _tokens['access_token'], secure=True, httponly=True,
                    samesite="strict")
 
-    res.set_cookie("csrf_token_cookie", csrf, secure=True, httponly=True,
+    res.set_cookie("csrf_token_cookie", _tokens['csrf_token'], secure=True, httponly=True,
                    samesite="strict")
     _tokens['refresh_token'] = ''
 

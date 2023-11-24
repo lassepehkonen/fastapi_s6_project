@@ -51,31 +51,3 @@ def delete(user_id: int, account: Admin, service: UserService):
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "User delete successfully"}
 
-
-''''''''''
-
-
-@router.delete("/api/v1/users/{user_id}/delete", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_user(user_id: int, current_user: user_dependency, db: db_dependency):
-    return user_controllers.delete_user_controller(user_id, current_user, db)
-
-
-
-def delete_user_controller(user_id: int, current_user: dict, db: Session):
-    try:
-        user_role = current_user.get('role')
-        if user_role != "admin":
-            raise HTTPException(status_code=403, detail='Access denied. User role not specified.')
-
-        user = get_user_by_id(db, user_id)
-        if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-
-        db.delete(user)
-        db.commit()
-
-        delete_refresh_token(user_id, db)
-
-    except Exception as e:
-        return {"Error": str(e)}
-'''''''''

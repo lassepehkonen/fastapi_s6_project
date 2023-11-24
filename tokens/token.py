@@ -35,11 +35,11 @@ class AsymmetricToken(TokenInterface):
             data['csrf'] = csrf
         if _type == 'refresh':
             data['exp'] = now + 3600 * 24
-        access_token = jwt.encode(data,
+        _token = jwt.encode(data,
                                   self.private,
                                   algorithm="RS512")
 
-        return access_token
+        return _token
 
     def validate(self, t):
         claims = jwt.decode(t, self.public, 'RS512', audience='localhost')
@@ -56,7 +56,7 @@ Token = Annotated[TokenInterface, Depends(init_token)]
 class AuthResponseHandlerToken(AuthResponseHandlerBase):
     async def send(self, res: Response, access: str, refresh: str, csrf: str, sub: str):
         res.set_cookie("access_token_cookie", access, samesite="strict")
-        res.set_cookie("refresh_token_cookie", refresh, samesite="strict", path="api/v1/auth/refresh")
+        res.set_cookie("refresh_token_cookie", refresh, samesite="strict")
         res.set_cookie("csrf_token_cookie", csrf, samesite="strict")
 
         return {'access_token': access, 'refresh_token': refresh, 'csrf_token': csrf}

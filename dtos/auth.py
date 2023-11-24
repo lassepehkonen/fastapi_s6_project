@@ -2,11 +2,6 @@
 from pydantic import BaseModel
 
 
-class Role(BaseModel):
-    id: int
-    name: str
-
-
 class UserLoginRes(BaseModel):
     access_token: str
     refresh_token: str
@@ -21,13 +16,13 @@ class UserRegisterRequest(BaseModel):
 class UserRegisterResponse(BaseModel):
     id: int
     username: str
-    role: Role
+    role: str
 
 
 class AccountResponse(BaseModel):
     id: int
     username: str
-    role: Role
+    role: str
 
 
 class SessionData(BaseModel):

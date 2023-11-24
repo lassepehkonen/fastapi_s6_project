@@ -6,7 +6,7 @@ from fastapi import Depends
 from passlib.context import CryptContext
 
 import dtos.auth
-from models import db_dependency, User, Role
+from models import db_dependency, User
 from tokens.token import Token
 
 from services.base_service import BaseService
@@ -27,7 +27,7 @@ class AuthAlchemyService(BaseService):
     def register(self, req: dtos.auth.UserRegisterRequest) -> User:
         user = User(**req.model_dump())
         user.password = bcrypt_context.hash(user.password)
-        user.role = self.db.query(Role).filter(Role.name == 'user').first()
+        user.role = 'user'
         self.db.add(user)
         self.db.commit()
         return user
@@ -53,7 +53,7 @@ class AuthAlchemyService(BaseService):
     def refresh(self, _token: Token, csrf: str, account: User):
         access_identifier = str(uuid.uuid4())
         access_token = _token.create(access_identifier, 'access', csrf)
-        csrf_token = _token.create(csrf, 'access', None)
+        csrf_token = _token.create(csrf, 'csrf', None)
         account.access_token_identifier = access_identifier
         self.db.commit()
 
@@ -71,7 +71,7 @@ class AuthAlchemyService(BaseService):
         refresh_identifier = str(uuid.uuid4())
         access_token = _token.create(access_identifier, 'access', csrf)
         refresh_token = _token.create(refresh_identifier, 'refresh', None)
-        csrf_token = _token.create(csrf, 'access', None)
+        csrf_token = _token.create(csrf, 'csrf', None)
 
         user.refresh_token_identifier = refresh_identifier
         user.access_token_identifier = access_identifier

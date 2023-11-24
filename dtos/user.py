@@ -5,8 +5,13 @@ from pydantic import BaseModel
 from dtos.auth import AccountResponse
 
 
+class User(BaseModel):
+    id: int
+    email: str
+
+
 class UpdateRole(BaseModel):
-    roles_id: int
+    role: str
 
 
 class UpdateUser(BaseModel):
@@ -19,4 +24,3 @@ class UpdateUserPassword(BaseModel):
 
 class UsersResponse(BaseModel):
     items: List[AccountResponse]
-

@@ -119,13 +119,13 @@ LoggedInUser = Annotated[models.User, Depends(get_logged_in_user)]
 
 
 def require_admin(account: LoggedInUser):
-    if account.role.name == 'admin':
+    if account.role == 'admin':
         return account
     raise HTTPException(status_code=403, detail='forbidden')
 
 
 def require_staff(account: LoggedInUser):
-    if account.role.name == 'admin' or account.role.name == 'teacher':
+    if account.role == 'admin' or account.role == 'teacher':
         return account
     raise HTTPException(status_code=403, detail='forbidden')
 

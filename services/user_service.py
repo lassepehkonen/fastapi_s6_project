@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from dtos.user import UpdateRole, UpdateUserPassword
-from models import db_dependency, User, Role
+from models import db_dependency, User
 from services.auth_service import bcrypt_context
 from services.base_service import BaseService
 
@@ -31,7 +31,7 @@ class UserUpdateService(BaseService):
         if user is None:
             return None
 
-        user.roles_id = update.roles_id
+        user.role = update.role
 
         self.db.commit()
         return True

@@ -5,7 +5,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 import tokens.token
-from controllers import auth_controller, user_controllers
+from controllers import auth_controller, user_controllers, inspections_form_controller, location_controller
 
 app = FastAPI()
 
@@ -30,7 +30,6 @@ async def check_csrf(request: Request, call_next):
         if str(request.url).find('login') == -1 and str(request.url).find('register') == -1:
 
             try:
-
                 _token = tokens.token.init_token()
                 csrf = _token.validate(request.cookies.get('csrf_token_cookie'))
                 access = _token.validate(request.cookies.get('access_token_cookie'))
@@ -40,6 +39,7 @@ async def check_csrf(request: Request, call_next):
                     return JSONResponse(content={'err': 'forbidden'}, status_code=403)
 
             except Exception as e:
+                print(f"An unexpected error occurred: {e}")
                 return JSONResponse(content={'err': 'forbidden'}, status_code=403)
 
     response = await call_next(request)
@@ -49,6 +49,8 @@ SSL = True
 
 app.include_router(auth_controller.router)
 app.include_router(user_controllers.router)
+app.include_router(inspections_form_controller.router)
+app.include_router(location_controller.router)
 
 
 if __name__ == '__main__':
